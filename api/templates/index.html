@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Título de tu aplicación</title>
+    <script>
+        function validateForm() {
+            var pickUpDateTime = document.forms["myForm"]["pickUpDateTime"].value;
+            var pattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+            if (!pattern.test(pickUpDateTime)) {
+                alert("Por favor, ingresa la fecha y la hora en el formato correcto (YYYY-MM-DD HH:MM:SS)");
+                return false;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Bienvenido a mi aplicación Flask</h1>
+    <form name="myForm" onsubmit="return validateForm()" method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.pickUpDateTime.label }}<br>
+            {{ form.pickUpDateTime(size=32) }}
+        </p>
+        <p>
+            {{ form.passengersNumber.label }}<br>
+            {{ form.passengersNumber() }}
+        </p>
+        <p>
+            {{ form.pickUpId.label }}<br>
+            {{ form.pickUpId() }}
+        </p>
+        <p>
+            {{ form.dropOffId.label }}<br>
+            {{ form.dropOffId() }}
+        </p>
+        <p>
+            {{ form.paymentMethodId.label }}<br>
+            {{ form.paymentMethodId() }}
+        </p>
+        <p>{{ form.submit() }}</p>
+        {% if total and duration %}
+            <h2>Resultados de la predicción</h2>
+            <p>Total: {{ total }}</p>
+            <p>Duración: {{ duration }}</p>
+        {% endif %}
+    </form>
+</body>
+</html>
