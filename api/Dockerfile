@@ -2,6 +2,9 @@
 FROM python:3.11.7 as base
 # Append /home/app/.local/bin/ to PATH variable because
 # gunicorn is installed there.
+
+RUN apt-get update
+
 ENV PYTHONPATH=$PYTHONPATH:/src/
 ENV PATH=$PATH:/home/app/.local/bin/
 
@@ -9,7 +12,8 @@ COPY ./ /api
 
 WORKDIR /api
 
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install gunicorn && pip install -r requirements.txt
+#RUN python appp.py
 
 FROM base as build
-ENTRYPOINT ["gunicorn", "--workers=8", "--bind", "0.0.0.0:5001", "app:app"]
+ENTRYPOINT ["gunicorn", "--workers=8", "--bind", "0.0.0.0:5001", "appp:app"]

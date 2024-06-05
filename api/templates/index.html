@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Título de tu aplicación</title>
+    <title>Taxi Fare and Trip Duration Prediction</title>
     <script>
         function validateForm() {
             var pickUpDateTime = document.forms["myForm"]["pickUpDateTime"].value;
             var pattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
             if (!pattern.test(pickUpDateTime)) {
-                alert("Por favor, ingresa la fecha y la hora en el formato correcto (YYYY-MM-DD HH:MM:SS)");
+                alert("Please enter the date and time in the correct format (YYYY-MM-DD HH:MM:SS)");
                 return false;
             }
         }
     </script>
 </head>
 <body>
-    <h1>Bienvenido a mi aplicación Flask</h1>
+    <h1>NYC Taxi Fare and Trip Duration Prediction</h1>
     <form name="myForm" onsubmit="return validateForm()" method="POST">
         {{ form.hidden_tag() }}
         <p>
