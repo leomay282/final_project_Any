@@ -163,8 +163,8 @@ def get_datasets() -> Tuple[pd.DataFrame, pd.DataFrame]:
     #app_test.drop("store_and_fwd_flag", inplace=True, axis=1)
 
     # No deberia quitarse 
-    app_test.drop("trip_distance", inplace=True, axis=1)
-    app_train.drop("trip_distance", inplace=True, axis=1)
+    #app_test.drop("trip_distance", inplace=True, axis=1)
+    #app_train.drop("trip_distance", inplace=True, axis=1)
     #app_test.drop("trip_distance", inplace=True, axis=1)
 
     app_test.drop("RatecodeID", inplace=True, axis=1)
@@ -205,6 +205,9 @@ def agregate_columns(
 ) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
 
     #Add the new 'duration_in_minutes' column to the DataFrame
+
+    
+
     dataset["duration_in_minutes"] = (
         dataset["tpep_dropoff_datetime"] - dataset["tpep_pickup_datetime"]
     ).dt.total_seconds() / 60
@@ -216,11 +219,34 @@ def agregate_columns(
     dataset["pickup_hour"] = dataset["tpep_pickup_datetime"].dt.hour
     dataset["pickup_minute"] = dataset["tpep_pickup_datetime"].dt.minute
 
+    #------------
+    dataset['trips_per_hour'] = dataset['pickup_hour'].map(dataset['pickup_hour'].value_counts())
+
+    # Convert the time columns to datetime
+    dataset['time1'] = pd.to_datetime(dataset['tpep_pickup_datetime'])
+    dataset['time2'] = pd.to_datetime(dataset['tpep_dropoff_datetime'])
+
+
+
+    # Calculate the difference in hours
+    dataset['time_diff'] = (dataset['time2'] - dataset['time1']).dt.total_seconds() / 3600
+    # Calculate speed in miles per hour
+    dataset['speed'] = dataset['trip_distance'] / dataset['time_diff']
+
+    dataset = dataset.dropna(subset=['speed'])
+    dataset = dataset[dataset['time_diff'] != 0]
+
+    # Now calculate the average speed per hour
+    average_speed_per_hour = dataset.groupby('pickup_hour')['speed'].mean()
+    dataset['average_speed_per_hour'] = dataset['pickup_hour'].map(average_speed_per_hour)
+    #----------
+
     dataset.drop("tpep_pickup_datetime", inplace=True, axis=1)
     dataset.drop("tpep_dropoff_datetime", inplace=True, axis=1)
-
-
-
+    dataset.drop("time1", inplace=True, axis=1)
+    dataset.drop("time2", inplace=True, axis=1)
+    dataset.drop("time_diff", inplace=True, axis=1)
+    dataset.drop("speed", inplace=True, axis=1)
 
 
     return dataset
