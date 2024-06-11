@@ -1,7 +1,13 @@
 import models_loader
 import pandas as pd
+import numpy as np
 
 def preprocess_input_data(data: pd.DataFrame) -> pd.DataFrame:
+     # Verifica que los datos no sean None y que sean 2D
+    if data is None or np.ndim(data) != 2:
+        print("Los datos de entrada no son válidos.")
+        return None
+    
     # Carga y aplica el encoder
     try:
         encoder = models_loader.load_encoder()
@@ -31,5 +37,6 @@ def preprocess_input_data(data: pd.DataFrame) -> pd.DataFrame:
     except Exception as e:
         print(f"Error al cargar o aplicar el scaler: {e}")
         return None
+
 
     return data

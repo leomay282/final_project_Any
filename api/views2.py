@@ -55,21 +55,43 @@ def index():
             "PULocationID": form.pickUpId.data,
             "DOLocationID": form.dropOffId.data,
             "payment_type": form.paymentMethodId.data,
-            "airport_fee": 1.25, # Hardcoded (to improve)
-            "improvement_surcharge": 0.3 # Hardcoded (to improve)
+            "trips_per_hour": 1200,
+            "average_speed_per_hour":20,
+            "trip_distance": 20
+            #"airport_fee": 1.25, # Hardcoded (to improve)
+            #"improvement_surcharge": 0.3 # Hardcoded (to improve)
         }
             
         try:
             data = pd.DataFrame(data, index=[0])
             data = agregate_columns.agregate_columns_to_input(data)
+
+            # Asumiendo que 'app_train' es tu DataFrame
+            # y 'columnas_ordenadas' es una lista con los nombres de las columnas en el orden que deseas
+
+            columnas_ordenadas = ['passenger_count', 'trip_distance', 'PULocationID', 'DOLocationID', 
+                                    'payment_type', 'pickup_year','pickup_day', 'pickup_day_of_week', 'pickup_minute', 'trips_per_hour',
+                                    'average_speed_per_hour']  # reemplaza esto con tu orden deseado
+
+            data = data.reindex(columns=columnas_ordenadas)
+
+            columns_to_convert = ['VendorID', 'RatecodeID','PULocationID', 'DOLocationID', 'payment_type']
+            def convert_columns_to_object2(data: pd.DataFrame, columns_to_convert: list) -> pd.DataFrame:
+                for column in columns_to_convert:
+                    if column in data.columns:
+                        data[column] = data[column].astype('object')
+                return data
+
+            data = convert_columns_to_object2(data, columns_to_convert)
+
             data = input_preprocessor.preprocess_input_data(data)
 
             results_total = total_trip_model.predict(data)
             results_duration = duration_trip_model.predict(data)
-
-            # Store the results in the session
-            session['results_total'] = results_total.tolist()
-            session['results_duration'] = results_duration.tolist()
+    # Store the results in the session
+            session['results_total'] = [round(num, 2) for num in results_total.tolist()]
+            session['results_duration'] = [round(num, 2) for num in results_duration.tolist()]
+        
 
             print("Redirigiendo a resultados")  # Debug print
 

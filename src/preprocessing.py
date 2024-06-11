@@ -2,7 +2,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, MaxAbsScaler
 from src.data_utils import find_columns, transform_data
 from joblib import dump, load
 from src.save_model import save_encoder, save_imputer, save_scaler
@@ -61,7 +61,7 @@ def preprocess_data(
 
     # Feature scaling with Min-Max scaler. Apply this to all the columns.
     # Ajustar el scaler solo en el conjunto de datos de entrenamiento
-    scaler = MinMaxScaler()
+    scaler = MaxAbsScaler()
     scaler = scaler.fit(imputed_train_df)
     save_scaler(scaler)
 

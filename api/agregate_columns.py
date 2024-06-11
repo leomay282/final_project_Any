@@ -22,7 +22,7 @@ def agregate_columns_to_input(data: pd.DataFrame):
         drop_column_if_exists(data, "fare_amount")
         drop_column_if_exists(data, "VendorID")
         drop_column_if_exists(data, "store_and_fwd_flag")
-        drop_column_if_exists(data, "trip_distance")
+        #drop_column_if_exists(data, "trip_distance")
         drop_column_if_exists(data, "RatecodeID")
         drop_column_if_exists(data, "tolls_amount")
         drop_column_if_exists(data, "tpep_pickup_datetime")
