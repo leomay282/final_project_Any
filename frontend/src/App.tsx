@@ -6,12 +6,12 @@ import ButtonComponent from './components/Button';
 import Card from './components/Card';
 import Form, { FormValue } from './components/Form';
 import { Coordinates } from './coordinates';
-import { getCoordinates } from './utils/getCoordinates';
 import { useDirectionsService } from './hooks/useDirectionsService';
 import yellowTaxi from './images/yellow-taxi.png';
 import { PredictPayload, PredictorService } from './services/predictor.service';
 import { TAXI_ZONES } from './taxi-zones';
 import { formatDate } from './utils/format-date';
+import { getCoordinates } from './utils/getCoordinates';
 
 function Page({ hasMapsAPILoaded }: { hasMapsAPILoaded: boolean }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -62,10 +62,10 @@ function Page({ hasMapsAPILoaded }: { hasMapsAPILoaded: boolean }) {
 
     try {
       const response = await PredictorService.predict(payload);
-      setIsLoading(false);
       setPrediction(response);
     } catch (error) {
       setHasError(true);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -89,11 +89,7 @@ function Page({ hasMapsAPILoaded }: { hasMapsAPILoaded: boolean }) {
                 Back
               </ButtonComponent>
             </div>
-            {!hasError && hasMapsAPILoaded && direction && (
-              <div style={{ height: '400px' }} className='mt-6'>
-                <MapComponent direction={direction} />
-              </div>
-            )}
+
             {!hasError && prediction && (
               <div className='mt-6'>
                 <span className='font-bold'>From </span> <span className='text-sm/6 text-white/50'>{pickup?.label}</span>
@@ -101,14 +97,19 @@ function Page({ hasMapsAPILoaded }: { hasMapsAPILoaded: boolean }) {
                 <br />
                 <div className='flex gap-12 mt-6'>
                   <div>
-                    <img src={yellowTaxi} alt='logo' className='w-auto h-20 ' />
+                    <img src={yellowTaxi} alt='logo' className='w-20 h-15 ' />
                   </div>
                   <div>
-                    <span> USD {prediction.amount} </span>
+                    <span>Price: USD {prediction.amount} </span>
                     <br />
                     <span> Duration: {prediction.duration} min </span>
                   </div>
                 </div>
+              </div>
+            )}
+            {!hasError && hasMapsAPILoaded && direction && (
+              <div style={{ height: '400px' }} className='mt-6'>
+                <MapComponent direction={direction} />
               </div>
             )}
 

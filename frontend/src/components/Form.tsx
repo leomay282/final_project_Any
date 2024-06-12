@@ -1,4 +1,4 @@
-import { Checkbox, Field, Fieldset, Input, Label, Legend, Select } from '@headlessui/react';
+import { Field, Fieldset, Input, Label, Legend, Select } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/16/solid';
 import clsx from 'clsx';
 import { ReactNode, useState } from 'react';
@@ -40,6 +40,7 @@ const SelectComponent = (props: React.SelectHTMLAttributes<HTMLSelectElement>) =
     </div>
   );
 };
+
 const LabelComponent = ({ children }: { children: ReactNode }) => {
   return <Label className='text-sm/6 font-medium text-white'> {children}</Label>;
 };
@@ -55,28 +56,28 @@ const InputComponent = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
     />
   );
 };
-const CheckboxComponent = ({ checked, onChange }: { checked: boolean; onChange?: (checked: boolean) => void }) => {
-  return (
-    <Checkbox checked={checked} onChange={onChange} className='group block size-4 rounded border bg-white data-[checked]:bg-blue-500'>
-      <svg className='stroke-white opacity-0 group-data-[checked]:opacity-100' viewBox='0 0 14 14' fill='none'>
-        <path d='M3 8L6 11L11 3.5' strokeWidth={2} strokeLinecap='round' strokeLinejoin='round' />
-      </svg>
-    </Checkbox>
-  );
-};
 
 const Form = ({ onSend, isLoading, zones }: { onSend: (formValue: FormValue) => void; isLoading: boolean; zones: TaxiZone[] }) => {
-  const [isFreeTrip, setIsFreeTrip] = useState(false);
   const [pickUpId, setPickUpId] = useState(zones[0].LocationID.toString());
-  const [dropOffId, setDropOffId] = useState(zones[zones.length - 1].LocationID.toString());
-  const [pickUpDateTime, setPickUpDateTime] = useState('');
+  const [dropOffId, setDropOffId] = useState(zones[1].LocationID.toString());
+  const [pickUpDateTime, setPickUpDateTime] = useState('2024-06-19 15:54:00');
   const [passengersNumber, setPassengersNumber] = useState('1');
   const [paymentMethodId, setPaymentMethodId] = useState('1');
 
   return (
     <Fieldset className='space-y-6 '>
       <Legend className='text-base/7 font-semibold text-white text-center'>Plan your ride</Legend>
-      <img src={yellowTaxi} alt='logo' className='w-auto h-32 mx-auto' />
+      <img src={yellowTaxi} alt='logo' className='w-auto h-20 mx-auto' />
+      <Field>
+        <LabelComponent>Pick up time</LabelComponent>
+        <InputComponent
+          type='datetime-local'
+          value={pickUpDateTime}
+          onChange={({ target }) => {
+            setPickUpDateTime(target.value);
+          }}
+        />
+      </Field>
 
       <Field>
         <LabelComponent>Pick up location</LabelComponent>
@@ -91,17 +92,6 @@ const Form = ({ onSend, isLoading, zones }: { onSend: (formValue: FormValue) => 
             </option>
           ))}
         </SelectComponent>
-      </Field>
-
-      <Field>
-        <LabelComponent>Pick up time</LabelComponent>
-        <InputComponent
-          type='datetime-local'
-          value={pickUpDateTime}
-          onChange={({ target }) => {
-            setPickUpDateTime(target.value);
-          }}
-        />
       </Field>
 
       <Field>
@@ -134,44 +124,29 @@ const Form = ({ onSend, isLoading, zones }: { onSend: (formValue: FormValue) => 
           <option value={5}>5</option>
           <option value={6}>6</option>
           <option value={7}>7</option>
-          <option value={8}>8</option>
-          <option value={9}>9</option>
-          <option value={10}>10</option>
         </SelectComponent>
       </Field>
 
-      <Field className='flex items-center gap-2'>
-        <CheckboxComponent
-          checked={isFreeTrip}
-          onChange={() => {
-            setIsFreeTrip((prevValue) => !prevValue);
-          }}
-        />
-        <LabelComponent>I have a promotional code for a free trip</LabelComponent>
+      <Field>
+        <LabelComponent>Payment method</LabelComponent>
+        <SelectComponent
+          value={paymentMethodId}
+          onChange={({ target }) => {
+            setPaymentMethodId(target.value);
+          }}>
+          {paymentMethods.map((method) => (
+            <option key={method.value} value={method.value}>
+              {method.label}
+            </option>
+          ))}
+        </SelectComponent>
       </Field>
-
-      {!isFreeTrip && (
-        <Field>
-          <LabelComponent>Payment method</LabelComponent>
-          <SelectComponent
-            value={paymentMethodId}
-            onChange={({ target }) => {
-              setPaymentMethodId(target.value);
-            }}>
-            {paymentMethods.map((method) => (
-              <option key={method.value} value={method.value}>
-                {method.label}
-              </option>
-            ))}
-          </SelectComponent>
-        </Field>
-      )}
 
       <div className='flex justify-end'>
         <ButtonComponent
           onClick={() => {
             onSend({
-              isFreeTrip,
+              isFreeTrip: false,
               pickUpDateTime,
               pickUpId: Number(pickUpId),
               dropOffId: Number(dropOffId),
